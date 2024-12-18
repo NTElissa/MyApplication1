@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 
     private TextView resultTextView;
-    private String currentInput = "";
-    private String operator = "";
-    private double firstNumber = 0;
+    private String currentInput = "";  // Holds the entire expression (operands + operators)
+    private String operator = "";      // Holds the current operator
+    private double firstNumber = 0;    // The first operand
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener listener = view -> {
             Button button = (Button) view;
             currentInput += button.getText().toString();
-            resultTextView.setText(currentInput);
+            resultTextView.setText(currentInput);  // Update the display with the current input
         };
 
         for (int id : numberButtons) {
@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
             if (!currentInput.isEmpty()) {
                 firstNumber = Double.parseDouble(currentInput);
-                currentInput = "";
+                currentInput += " " + operator + " ";  // Add operator to current input
+                resultTextView.setText(currentInput);  // Update display
             }
         };
 
@@ -82,14 +83,17 @@ public class MainActivity extends AppCompatActivity {
         // Equals Button
         findViewById(R.id.buttonEquals).setOnClickListener(view -> {
             if (!currentInput.isEmpty() && !operator.isEmpty()) {
-                double secondNumber = Double.parseDouble(currentInput);
-                double result = performCalculation(firstNumber, secondNumber, operator);
-                resultTextView.setText(String.valueOf(result));
+                String[] parts = currentInput.split(" " + operator + " ");  // Split input by operator
+                if (parts.length == 2) {
+                    double secondNumber = Double.parseDouble(parts[1]);
+                    double result = performCalculation(firstNumber, secondNumber, operator);
+                    currentInput += " = " + result;  // Append the result to the expression
+                    resultTextView.setText(currentInput);  // Show complete expression with result
 
-                // Reset for next calculation
-                currentInput = "";
-                firstNumber = result;
-                operator = "";
+                    // Reset for next calculation
+                    firstNumber = result;
+                    operator = "";
+                }
             }
         });
     }
